@@ -11,6 +11,9 @@ npm install -D kubox-preact
 
 ## example
 
+> Outside of this example you can play with an existing one in [jsfiddle] (https://jsfiddle.net/uppercod/3hvru6ex/340/).
+
+
 ```js
 import Store from "kubox";
 import { h, render } from "preact";
