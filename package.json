@@ -1,6 +1,6 @@
 {
   "name": "kubox-preact",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "small component for preact to control the state of an application with kubox",
   "main": "build/cjs.js",
   "module": "build/cjs.js",
@@ -24,9 +24,6 @@
   "devDependencies": {
     "preact": "^8.2.6",
     "rollup": "^0.45.2",
-    "rollup-plugin-buble": "^0.17.0",
-    "rollup-plugin-commonjs": "^8.0.2",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-postcss": "^0.5.5"
+    "rollup-plugin-buble": "^0.17.0"
   }
 }

@@ -1,5 +1,3 @@
-import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
 import buble from "rollup-plugin-buble";
 
 const NAME = "PreactStateNano";
@@ -29,13 +27,6 @@ export default {
         exclude: ["node_modules/**"]
     },
     plugins: [
-        resolve({
-            jsnext: true,
-            main: true
-        }),
-        commonjs({
-            include: "node_modules/**"
-        }),
         buble({
             jsx: "h",
             objectAssign: "Object.assign"
