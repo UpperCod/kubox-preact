@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('preact')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'preact'], factory) :
-	(factory((global.PreactStateNano = {}),global.preact));
+	(factory((global.KuboxPreact = {}),global.preact));
 }(this, (function (exports,preact) { 'use strict';
 
 var PROVIDER = "__KUBOX__";

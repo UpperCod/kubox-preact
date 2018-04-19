@@ -1,6 +1,6 @@
 import buble from "rollup-plugin-buble";
 
-const NAME = "PreactStateNano";
+const NAME = "KuboxPreact";
 
 export default {
     input: "src/index.js",

@@ -1,4 +1,4 @@
-var PreactStateNano = (function (exports,preact) {
+var KuboxPreact = (function (exports,preact) {
 'use strict';
 
 var PROVIDER = "__KUBOX__";
