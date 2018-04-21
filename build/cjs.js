@@ -6,18 +6,44 @@ var preact = require('preact');
 
 var PROVIDER = "__KUBOX__";
 
-var Connect = (function (Component) {
-    function Connect () {
+var Static = (function (Component) {
+    function Static () {
         Component.apply(this, arguments);
     }
 
-    if ( Component ) Connect.__proto__ = Component;
-    Connect.prototype = Object.create( Component && Component.prototype );
-    Connect.prototype.constructor = Connect;
+    if ( Component ) Static.__proto__ = Component;
+    Static.prototype = Object.create( Component && Component.prototype );
+    Static.prototype.constructor = Static;
 
-    Connect.prototype.getStore = function getStore () {
+    Static.prototype.getStore = function getStore () {
         return this.props.store || this.context[PROVIDER];
     };
+    Static.prototype.connect = function connect (callback) {
+        if (typeof callback !== "function") { return; }
+        var ref = this.getStore();
+        var state = ref.state;
+        var actions = ref.actions;
+        return callback(state, actions);
+    };
+    Static.prototype.render = function render (ref) {
+        var children = ref.children;
+        var render = ref.render;
+
+        return this.connect(render || children[0]);
+    };
+
+    return Static;
+}(preact.Component));
+
+var Connect = (function (Static) {
+    function Connect () {
+        Static.apply(this, arguments);
+    }
+
+    if ( Static ) Connect.__proto__ = Static;
+    Connect.prototype = Object.create( Static && Static.prototype );
+    Connect.prototype.constructor = Connect;
+
     Connect.prototype.subscribe = function subscribe (watch, store) {
         var this$1 = this;
 
@@ -45,22 +71,9 @@ var Connect = (function (Component) {
         if (this.unsubscribe) { this.unsubscribe(); }
         this.connect(this.props.unmount);
     };
-    Connect.prototype.connect = function connect (callback) {
-        if (typeof callback !== "function") { return; }
-        var ref = this.getStore();
-        var state = ref.state;
-        var actions = ref.actions;
-        return callback(state, actions);
-    };
-    Connect.prototype.render = function render (ref) {
-        var children = ref.children;
-        var render = ref.render;
-
-        return this.connect(render || children[0]);
-    };
 
     return Connect;
-}(preact.Component));
+}(Static));
 
 var Provider = (function (Component) {
     function Provider () {
@@ -85,5 +98,6 @@ var Provider = (function (Component) {
 }(preact.Component));
 
 exports.PROVIDER = PROVIDER;
+exports.Static = Static;
 exports.Connect = Connect;
 exports.Provider = Provider;

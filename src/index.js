@@ -2,10 +2,21 @@ import { h, Component } from "preact";
 
 export const PROVIDER = "__KUBOX__";
 
-export class Connect extends Component {
+export class Static extends Component {
     getStore() {
         return this.props.store || this.context[PROVIDER];
     }
+    connect(callback) {
+        if (typeof callback !== "function") return;
+        let { state, actions } = this.getStore();
+        return callback(state, actions);
+    }
+    render({ children, render }) {
+        return this.connect(render || children[0]);
+    }
+}
+
+export class Connect extends Static {
     subscribe(watch, store) {
         store = store || this.getStore();
         if (!store) throw "Store undefined";
@@ -30,14 +41,6 @@ export class Connect extends Component {
     componentWillUnmount() {
         if (this.unsubscribe) this.unsubscribe();
         this.connect(this.props.unmount);
-    }
-    connect(callback) {
-        if (typeof callback !== "function") return;
-        let { state, actions } = this.getStore();
-        return callback(state, actions);
-    }
-    render({ children, render }) {
-        return this.connect(render || children[0]);
     }
 }
 

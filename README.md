@@ -60,33 +60,72 @@ render(
 );
 ```
 
-## Out of Provider's context
+## Provider
 
-**Provider** provides you with the option to generate a shared context supported in `Component :: getChildContext`, but for small contexts or tests you can use only the **Connect** component and define the store property.
-
+Create a context for **Connect** and **Static**.
 
 ```js
-import store from "../store";
-import App from "../app";
+import {h} from "preact";
+import { Provider } from "kubox-preact";
+import store from "./store";
+import App from "./app";
 
 export default (
-   <Connect store={store}>
-       {(state, actions) => <App load={actions.load} />}
-   </Connect>
+  <Provider store={store}>
+      <App/>
+  </Provider>
 );
 ```
 
-## Connect watch
+### Provider props
 
-As you know **kubox** prevents the context of the reducer from being deep, so observing changes to the nameSpace is simple, in fact **kubox** applies the `Object.keys (update)` function to get the nameSpace that are generating modifications and thus notify subscribers who only listen to said nameSpace. Avoiding overloads when updating the status.
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| **store** | instanceof Kubox | allows to ignore the context given by provider and point to this property |
 
-> **watch** can be an array or a string.
+## Connect
+
+This component allows you to subscribe to a ** store ** delivered by **Provider** or by the prop **store**
 
 ```js
-import App from "../app";
+import {h} from "preact";
+import { Connect } from "kubox-preact";
+
 export default (
-   <Connect watch='home'>
-       {(state, actions) => <App load={actions.load} />}
-   </Connect>
+  <Connect>
+      {(state, actions) => <App load={actions.load} />}
+  </Connect>
 );
 ```
+
+### Connect props
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| **watch** | string, array | allows you to select the subscription to one or more namespace of the state |
+| **mount** | function | is executed when the component is mounted, receives as parameters state and actions |
+| **unmount** | function | is executed at the time of disassembling the component, receives as parameters state and actions |
+| **store** | instanceof Kubox | allows to ignore the context given by provider and point to this property |
+| **render** | function | alternative execution to function within component |
+
+## Static
+
+Allows access to the store but **without subscribing to the changes**, as done by connect.
+
+```js
+import {h} from "preact";
+import { Static } from "kubox-preact";
+
+export default (
+  <Static>
+      {(state, actions) => <App load={actions.load} />}
+  </Static>
+);
+```
+
+### Static props
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| **store** | instanceof Kubox | allows to ignore the context given by provider and point to this property |
+| **render** | function | alternative execution to function within component |
