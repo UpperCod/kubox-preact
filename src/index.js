@@ -34,7 +34,7 @@ export class Connect extends Component {
     connect(callback) {
         if (typeof callback !== "function") return;
         let { state, actions } = this.getStore();
-        callback(state, actions);
+        return callback(state, actions);
     }
     render({ children, render }) {
         return this.connect(render || children[0]);

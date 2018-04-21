@@ -50,7 +50,7 @@ var Connect = (function (Component) {
         var ref = this.getStore();
         var state = ref.state;
         var actions = ref.actions;
-        callback(state, actions);
+        return callback(state, actions);
     };
     Connect.prototype.render = function render (ref) {
         var children = ref.children;
