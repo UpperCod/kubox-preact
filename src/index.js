@@ -6,8 +6,8 @@ export class Connect extends Component {
     getStore() {
         return this.props.store || this.context[PROVIDER];
     }
-    subscribe(watch) {
-        let store = this.getStore();
+    subscribe(watch, store) {
+        store = store || this.getStore();
         if (!store) throw "Store undefined";
         let unsubscribers = []
             .concat(watch || "*")
@@ -18,16 +18,26 @@ export class Connect extends Component {
     }
     componentWillMount() {
         this.subscribe(this.props.watch);
+        this.connect(this.props.mount);
     }
     componentWillReceiveProps(props) {
-        if (props.watch || props.store) {
-            if (this.unsubscribe) this.unsubscribe();
-            this.subscribe(props.watch);
+        props = { ...this.props, ...props };
+        if (this.unsubscribe) {
+            this.unsubscribe();
         }
+        this.subscribe(props.watch, props.store);
     }
-    render({ children }) {
+    componentWillUnmount() {
+        if (this.unsubscribe) this.unsubscribe();
+        this.connect(this.props.unmount);
+    }
+    connect(callback) {
+        if (typeof callback !== "function") return;
         let { state, actions } = this.getStore();
-        return children[0](state, actions);
+        callback(state, actions);
+    }
+    render({ children, render }) {
+        return this.connect(render || children[0]);
     }
 }
 

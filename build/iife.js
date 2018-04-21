@@ -15,10 +15,10 @@ var Connect = (function (Component) {
     Connect.prototype.getStore = function getStore () {
         return this.props.store || this.context[PROVIDER];
     };
-    Connect.prototype.subscribe = function subscribe (watch) {
+    Connect.prototype.subscribe = function subscribe (watch, store) {
         var this$1 = this;
 
-        var store = this.getStore();
+        store = store || this.getStore();
         if (!store) { throw "Store undefined"; }
         var unsubscribers = []
             .concat(watch || "*")
@@ -29,20 +29,31 @@ var Connect = (function (Component) {
     };
     Connect.prototype.componentWillMount = function componentWillMount () {
         this.subscribe(this.props.watch);
+        this.connect(this.props.mount);
     };
     Connect.prototype.componentWillReceiveProps = function componentWillReceiveProps (props) {
-        if (props.watch || props.store) {
-            if (this.unsubscribe) { this.unsubscribe(); }
-            this.subscribe(props.watch);
+        props = Object.assign({}, this.props, props);
+        if (this.unsubscribe) {
+            this.unsubscribe();
         }
+        this.subscribe(props.watch, props.store);
+    };
+    Connect.prototype.componentWillUnmount = function componentWillUnmount () {
+        if (this.unsubscribe) { this.unsubscribe(); }
+        this.connect(this.props.unmount);
+    };
+    Connect.prototype.connect = function connect (callback) {
+        if (typeof callback !== "function") { return; }
+        var ref = this.getStore();
+        var state = ref.state;
+        var actions = ref.actions;
+        callback(state, actions);
     };
     Connect.prototype.render = function render (ref) {
         var children = ref.children;
+        var render = ref.render;
 
-        var ref$1 = this.getStore();
-        var state = ref$1.state;
-        var actions = ref$1.actions;
-        return children[0](state, actions);
+        return this.connect(render || children[0]);
     };
 
     return Connect;

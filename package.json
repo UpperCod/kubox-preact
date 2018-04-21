@@ -1,6 +1,6 @@
 {
   "name": "kubox-preact",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "small component for preact to control the state of an application with kubox",
   "main": "build/cjs.js",
   "module": "build/cjs.js",
