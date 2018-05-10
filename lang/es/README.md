@@ -1,133 +1,72 @@
 # kubox-preact
 
-Una pequeña librería para compartir el estado administrado por [Kubox](https://github.com/uppercod/kubox).
+Kubox-preact permite integrar **[kubox](https://github.com/uppercod/kubox)** como manejador de estado para aplicaciones creadas con **preact**.
 
-```bash
-#yarn
-yarn add -D kubox-preact
-#npm
-npm install -D kubox-preact
-```
+| formato UMD | tamaño |
+|-------------|--------|
+| normal |3.84kb |
+| min | 1.76kb |
+| gzip | 649 bytes |
 
-## Ejemplo
+Aplicarlo es simple, **kubox-preact** posee 3 tipos de componentes :
 
-> Fuera de este ejemplo puede jugar con uno existente en [jsfiddle](https://jsfiddle.net/uppercod/3hvru6ex/340/).
-
-```js
-import Store from "kubox";
-import { h, render } from "preact";
-import { Provider, Connect, Static } from "kubox-preact";
-
-function Header({ title }) {
-  return <h1>{title}</h1>;
-}
-
-let store = new Store(
-  {
-      title: "Hello!"
-  },
-  {
-      title: {
-          update(state, title) {
-              return title;
-          }
-      }
-  }
-);
-
-render(
-  <Provider store={store}>
-      <div>
-          <Static>
-              {(state, actions) => <Header title={state.title} />}
-          </Static>
-          <Connect>
-              {(state, actions) => (
-                  <div>
-                      <button onclick={() => action.titleUpdate("Hello!")}>
-                          select title : Hello!
-                      </button>
-                      <button onclick={() => action.titleUpdate("Bye!")}>
-                          select title : Bye!
-                      </button>
-                  </div>
-              )}
-          </Connect>
-      </div>
-  </Provider>,
-  document.querySelector("main")
-);
-```
+1. **Provider** : crea contextos de estado
+2. **Suscriber** : accede y se suscribe a los cambios dados por el contexto de estado compartido por componente Provider.
+3. **Consumer** : accede al contexto de estado compartido por componente Provider.
 
 ## Provider
 
-Permite crear un contexto para **Connect** y **Static**.
+el componente Provider permite crear contextos compartidos para los componentes que este aloje.
+
+|Parámetro|Tipo|Descripción|
+|---------|----|-----------|
+| **store** | instanceof Kubox | contexto a compartir |
 
 ```js
 import {h} from "preact";
-import { Provider } from "kubox-preact";
+import {Provider} from "kubox-preact";
 import store from "./store";
-import App from "./app";
+import App from "./App";
 
-export default (
-  <Provider store={store}>
-      <App/>
-  </Provider>
-);
+export default <Provider store={store}>
+   <App/>
+</Provider>;
 ```
 
-### Provider props
+## Subscriber
+
+El componente Subscriber permite suscribirse y accede un store definido por el contexto del componente Provider o por propiedad store.
+
+|Parámetro|Tipo|Descripción|
+|---------|----|-----------|
+| **select** | string , array | permite seleccionar la suscripción a uno o más namespace del estado |
+| **store** | instanceof Kubox | permite ignorar el contexto dado por el componente Provider y apuntar a esta propiedad |
+
+
+```js
+import {h} from "preact";
+import {Provider} from "kubox-preact";
+
+export default <Subscriber>
+     {(state, actions) => <input oninput={actions.inputWrite}/>}
+</Subscriber>;
+```
+
+## Consumer
+
+El componente Consumer permite acceder un store definido por el contexto del componente Provider o por propiedad store.
 
 |Parámetro|Tipo|Descripción|
 |---------|----|-----------|
 | **store** | instanceof Kubox | permite ignorar el contexto dado por provider y apuntar a esta propiedad |
 
-## Connect
-
-Este componente permite suscribirse a un **store** entregado por **Provider** o por el prop **store**
-
 ```js
 import {h} from "preact";
-import { Connect } from "kubox-preact";
+import {Provider} from "kubox-preact";
 
-export default (
-  <Connect>
-      {(state, actions) => <App load={actions.load} />}
-  </Connect>
-);
+export default <Consumer>
+     {(state, actions) => <input oninput={actions.inputWrite}/>}
+</Consumer>;
 ```
-
-### Connect props
-
-|Parámetro|Tipo|Descripción|
-|---------|----|-----------|
-| **watch**   | string , array | permite seleccionar la suscripción a uno o más namespace del estado |
-| **mount** | function | se ejecuta al momento de montar el componente, recibe como parámetros state y actions |
-| **unmount** | function | se ejecuta al momento de desmontar el componente, recibe como parámetros state y actions |
-| **store** | instanceof Kubox | permite ignorar el contexto dado por provider y apuntar a esta propiedad |
-| **render** | function | ejecución alternativa a funcion dentro de componente |
-
-
-## Static
-
-Permite acceder al store pero sin suscribirse a los cambios, como lo realiza connect.
-
-
-```js
-import {h} from "preact";
-import { Static } from "kubox-preact";
-
-export default (
-  <Static>
-      {(state, actions) => <App load={actions.load} />}
-  </Static>
-);
-```
-
-### Static props
-
-|Parámetro|Tipo|Descripcion|
-|---------|----|-----------|
-| **store** | instanceof Kubox | permite ignorar el contexto dado por provider y apuntar a esta propiedad |
-| **render** | function | ejecución alternativa a funcion dentro de componente |
+> el componente Consumer no se suscribe a los cambios, como si lo realiza el componente Subscriber
 

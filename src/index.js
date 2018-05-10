@@ -1,53 +1,53 @@
 import { h, Component } from "preact";
 
-export const PROVIDER = "__KUBOX__";
+export const nameSpace = "__KUBOX__";
 
-export class Static extends Component {
+export class Consumer extends Component {
     getStore() {
-        return this.props.store || this.context[PROVIDER];
+        return this.props.store || this.context[nameSpace];
     }
     connect(callback) {
         if (typeof callback !== "function") return;
         let { state, actions } = this.getStore();
         return callback(state, actions);
     }
-    render({ children, render }) {
-        return this.connect(render || children[0]);
+    render({ children }) {
+        return this.connect(children[0]);
     }
 }
 
-export class Connect extends Static {
-    subscribe(watch, store) {
+export class Subscriber extends Consumer {
+    subscribe(select, store) {
         store = store || this.getStore();
         if (!store) throw "Store undefined";
         let unsubscribers = []
-            .concat(watch || "*")
+            .concat(select || "*")
             .map(prop => store.subscribe(() => this.setState(), prop));
         this.unsubscribe = () => {
             unsubscribers.forEach(unsubscribe => unsubscribe());
         };
     }
     componentWillMount() {
-        this.subscribe(this.props.watch);
-        this.connect(this.props.mount);
+        this.subscribe(this.props.select);
+        // this.connect(this.props.mount);
     }
     componentWillReceiveProps(props) {
         props = { ...this.props, ...props };
         if (this.unsubscribe) {
             this.unsubscribe();
         }
-        this.subscribe(props.watch, props.store);
+        this.subscribe(props.select, props.store);
     }
     componentWillUnmount() {
         if (this.unsubscribe) this.unsubscribe();
-        this.connect(this.props.unmount);
+        // this.connect(this.props.unmount);
     }
 }
 
 export class Provider extends Component {
     getChildContext() {
         return {
-            [PROVIDER]: this.props.store
+            [nameSpace]: this.props.store
         };
     }
     render({ children }) {

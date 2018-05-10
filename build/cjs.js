@@ -4,76 +4,75 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var preact = require('preact');
 
-var PROVIDER = "__KUBOX__";
+var nameSpace = "__KUBOX__";
 
-var Static = (function (Component) {
-    function Static () {
+var Consumer = (function (Component) {
+    function Consumer () {
         Component.apply(this, arguments);
     }
 
-    if ( Component ) Static.__proto__ = Component;
-    Static.prototype = Object.create( Component && Component.prototype );
-    Static.prototype.constructor = Static;
+    if ( Component ) Consumer.__proto__ = Component;
+    Consumer.prototype = Object.create( Component && Component.prototype );
+    Consumer.prototype.constructor = Consumer;
 
-    Static.prototype.getStore = function getStore () {
-        return this.props.store || this.context[PROVIDER];
+    Consumer.prototype.getStore = function getStore () {
+        return this.props.store || this.context[nameSpace];
     };
-    Static.prototype.connect = function connect (callback) {
+    Consumer.prototype.connect = function connect (callback) {
         if (typeof callback !== "function") { return; }
         var ref = this.getStore();
         var state = ref.state;
         var actions = ref.actions;
         return callback(state, actions);
     };
-    Static.prototype.render = function render (ref) {
+    Consumer.prototype.render = function render (ref) {
         var children = ref.children;
-        var render = ref.render;
 
-        return this.connect(render || children[0]);
+        return this.connect(children[0]);
     };
 
-    return Static;
+    return Consumer;
 }(preact.Component));
 
-var Connect = (function (Static) {
-    function Connect () {
-        Static.apply(this, arguments);
+var Subscriber = (function (Consumer) {
+    function Subscriber () {
+        Consumer.apply(this, arguments);
     }
 
-    if ( Static ) Connect.__proto__ = Static;
-    Connect.prototype = Object.create( Static && Static.prototype );
-    Connect.prototype.constructor = Connect;
+    if ( Consumer ) Subscriber.__proto__ = Consumer;
+    Subscriber.prototype = Object.create( Consumer && Consumer.prototype );
+    Subscriber.prototype.constructor = Subscriber;
 
-    Connect.prototype.subscribe = function subscribe (watch, store) {
+    Subscriber.prototype.subscribe = function subscribe (select, store) {
         var this$1 = this;
 
         store = store || this.getStore();
         if (!store) { throw "Store undefined"; }
         var unsubscribers = []
-            .concat(watch || "*")
+            .concat(select || "*")
             .map(function (prop) { return store.subscribe(function () { return this$1.setState(); }, prop); });
         this.unsubscribe = function () {
             unsubscribers.forEach(function (unsubscribe) { return unsubscribe(); });
         };
     };
-    Connect.prototype.componentWillMount = function componentWillMount () {
-        this.subscribe(this.props.watch);
-        this.connect(this.props.mount);
+    Subscriber.prototype.componentWillMount = function componentWillMount () {
+        this.subscribe(this.props.select);
+        // this.connect(this.props.mount);
     };
-    Connect.prototype.componentWillReceiveProps = function componentWillReceiveProps (props) {
+    Subscriber.prototype.componentWillReceiveProps = function componentWillReceiveProps (props) {
         props = Object.assign({}, this.props, props);
         if (this.unsubscribe) {
             this.unsubscribe();
         }
-        this.subscribe(props.watch, props.store);
+        this.subscribe(props.select, props.store);
     };
-    Connect.prototype.componentWillUnmount = function componentWillUnmount () {
+    Subscriber.prototype.componentWillUnmount = function componentWillUnmount () {
         if (this.unsubscribe) { this.unsubscribe(); }
-        this.connect(this.props.unmount);
+        // this.connect(this.props.unmount);
     };
 
-    return Connect;
-}(Static));
+    return Subscriber;
+}(Consumer));
 
 var Provider = (function (Component) {
     function Provider () {
@@ -85,7 +84,7 @@ var Provider = (function (Component) {
     Provider.prototype.constructor = Provider;
 
     Provider.prototype.getChildContext = function getChildContext () {
-        return ( obj = {}, obj[PROVIDER] = this.props.store, obj);
+        return ( obj = {}, obj[nameSpace] = this.props.store, obj );
         var obj;
     };
     Provider.prototype.render = function render (ref) {
@@ -97,7 +96,7 @@ var Provider = (function (Component) {
     return Provider;
 }(preact.Component));
 
-exports.PROVIDER = PROVIDER;
-exports.Static = Static;
-exports.Connect = Connect;
+exports.nameSpace = nameSpace;
+exports.Consumer = Consumer;
+exports.Subscriber = Subscriber;
 exports.Provider = Provider;
