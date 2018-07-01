@@ -1,26 +1,28 @@
 import buble from "rollup-plugin-buble";
 
-const NAME = "KuboxPreact";
-
 export default {
     input: "src/index.js",
     output: [
         {
-            file: "build/umd.js",
-            format: "umd",
-            name: NAME
+            file: "build/kubox-preact.js",
+            format: "iife",
+            name: "KuboxPreact"
         },
         {
-            file: "build/cjs.js",
+            file: "build/kubox-preact.umd.js",
+            format: "umd",
+            name: "KuboxPreact"
+        },
+        {
+            file: "build/kubox-preact.cjs.js",
             format: "cjs"
         },
         {
-            file: "build/iife.js",
-            format: "iife",
-            name: NAME
+            file: "build/kubox-preact.es.js",
+            format: "es"
         }
     ],
-    sourceMap: false,
+    sourceMap: true,
     external: ["preact"],
     watch: {
         chokidar: {},

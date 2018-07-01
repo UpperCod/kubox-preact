@@ -1,10 +1,9 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('preact')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'preact'], factory) :
-    (factory((global.KuboxPreact = {}),global.preact));
-}(this, (function (exports,preact) { 'use strict';
+var KuboxPreact = (function (exports,preact) {
+    'use strict';
 
-    var nameSpace = "__KUBOX__";
+    var config = {
+        provider: "[[KUBOX]]"
+    };
 
     var Consumer = (function (Component) {
         function Consumer () {
@@ -16,7 +15,7 @@
         Consumer.prototype.constructor = Consumer;
 
         Consumer.prototype.getStore = function getStore () {
-            return this.props.store || this.context[nameSpace];
+            return this.props.store || this.context[config.provider];
         };
         Consumer.prototype.connect = function connect (callback) {
             if (typeof callback !== "function") { return; }
@@ -57,7 +56,6 @@
         };
         Subscriber.prototype.componentWillMount = function componentWillMount () {
             this.subscribe(this.props.select);
-            // this.connect(this.props.mount);
         };
         Subscriber.prototype.componentWillReceiveProps = function componentWillReceiveProps (props) {
             props = Object.assign({}, this.props, props);
@@ -68,7 +66,6 @@
         };
         Subscriber.prototype.componentWillUnmount = function componentWillUnmount () {
             if (this.unsubscribe) { this.unsubscribe(); }
-            // this.connect(this.props.unmount);
         };
 
         return Subscriber;
@@ -84,7 +81,7 @@
         Provider.prototype.constructor = Provider;
 
         Provider.prototype.getChildContext = function getChildContext () {
-            return ( obj = {}, obj[nameSpace] = this.props.store, obj );
+            return ( obj = {}, obj[config.provider] = this.props.store, obj );
             var obj;
         };
         Provider.prototype.render = function render (ref) {
@@ -96,11 +93,11 @@
         return Provider;
     }(preact.Component));
 
-    exports.nameSpace = nameSpace;
+    exports.config = config;
     exports.Consumer = Consumer;
     exports.Subscriber = Subscriber;
     exports.Provider = Provider;
 
-    Object.defineProperty(exports, '__esModule', { value: true });
+    return exports;
 
-})));
+}({},preact));

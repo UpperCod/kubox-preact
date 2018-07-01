@@ -1,10 +1,12 @@
 import { h, Component } from "preact";
 
-export const nameSpace = "__KUBOX__";
+export const config = {
+    provider: "[[KUBOX]]"
+};
 
 export class Consumer extends Component {
     getStore() {
-        return this.props.store || this.context[nameSpace];
+        return this.props.store || this.context[config.provider];
     }
     connect(callback) {
         if (typeof callback !== "function") return;
@@ -29,7 +31,6 @@ export class Subscriber extends Consumer {
     }
     componentWillMount() {
         this.subscribe(this.props.select);
-        // this.connect(this.props.mount);
     }
     componentWillReceiveProps(props) {
         props = { ...this.props, ...props };
@@ -40,14 +41,13 @@ export class Subscriber extends Consumer {
     }
     componentWillUnmount() {
         if (this.unsubscribe) this.unsubscribe();
-        // this.connect(this.props.unmount);
     }
 }
 
 export class Provider extends Component {
     getChildContext() {
         return {
-            [nameSpace]: this.props.store
+            [config.provider]: this.props.store
         };
     }
     render({ children }) {
