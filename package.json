@@ -1,16 +1,13 @@
 {
   "name": "kubox-preact",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "small component for preact to control the state of an application with kubox",
-  "main": "dist/cjs.js",
-  "umd:main": "dist/umd.js",
-  "module": "dist/cjs.js",
-  "jsnext:main": "src/index.js",
+  "main": "dist/kubox-preact.js",
+  "umd:main": "dist/kubox-preact.umd.js",
+  "module": "dist/kubox-preact.m.js",
   "source": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup -c",
-    "dev": "rollup -c -w"
+    "build" : "microbundle --externals \"preact\""
   },
   "keywords": [
     "preact"
@@ -22,7 +19,7 @@
     "url": "https://github.com/UpperCod/kubox-preact"
   },
   "devDependencies": {
-    "rollup-plugin-buble": "^0.17.0"
+    "microbundle": "^0.6.0"
   },
   "dependencies": {
     "preact": "^8.2.9"
