@@ -1,6 +1,6 @@
 {
   "name": "kubox-preact",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "small component for preact to control the state of an application with kubox",
   "main": "dist/kubox-preact.js",
   "umd:main": "dist/kubox-preact.umd.js",
